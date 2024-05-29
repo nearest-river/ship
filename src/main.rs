@@ -1,5 +1,6 @@
 
 mod app;
+pub mod config;
 pub mod fs_api;
 pub mod prompt;
 
