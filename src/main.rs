@@ -1,5 +1,7 @@
 
 mod app;
+pub mod fs_api;
+pub mod prompt;
 
 
 use app::App;
