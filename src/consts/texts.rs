@@ -3,7 +3,7 @@ pub const GITIGNORE: &str=r#"
 target/
 "#;
 
-pub const MAIN_C: &str=r#"
+pub const MAIN: &str=r#"
 #include <stdio.h>
 
 int main(int argc,const char** argv) {
@@ -12,7 +12,7 @@ int main(int argc,const char** argv) {
 }
 "#;
 
-pub const LIB_C: &str=r#"
+pub const LIB: &str=r#"
 #ifdef _cplusplus
 extern "C" {
 #endif

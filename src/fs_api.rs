@@ -3,7 +3,11 @@
 use tokio::*;
 use std::path::Path;
 use color_print::cformat;
-use crate::prompt::confirm;
+
+use crate::{
+  prompt::confirm,
+  consts::paths
+};
 
 
 
@@ -32,13 +36,13 @@ pub async fn ensure_fresh_dir<P: AsRef<Path>>(path: P,is_bin: bool)-> io::Result
     )),
     _=> {
       let _=(// Just ignoring the NotFound error.
-        fs::remove_dir_all(".git").await,
-        fs::remove_file(".gitignore").await,
-        fs::remove_file("Ship.toml").await,
-        fs::remove_file("Ship.lock").await,
+        fs::remove_dir_all(paths::GIT_REPO_DIR).await,
+        fs::remove_file(paths::GITIGNORE).await,
+        fs::remove_file(paths::CONFIG_FILE).await,
+        fs::remove_file(paths::LOCK_FILE).await,
         match is_bin {
-          true=> fs::remove_file("src/main.c").await,
-          _=> fs::remove_file("src/lib.c").await
+          true=> fs::remove_file(paths::MAIN).await,
+          _=> fs::remove_file(paths::LIB).await
         }
       );
 

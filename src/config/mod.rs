@@ -19,8 +19,6 @@ pub struct ShipConfig {
 
 
 impl ShipConfig {
-  pub const CONFIG_FILE_NAME: &'static str="Ship.toml";
-
   pub async fn save<P: AsRef<std::path::Path>>(&self,path: P)-> io::Result<()> {
     fs::write(path,toml::to_string_pretty(&self).expect("couldn't parse the config file.")).await
   }

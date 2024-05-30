@@ -2,11 +2,15 @@
 
 use tokio::*;
 use clap::Parser;
-use crate::config::ShipConfig;
-use crate::fs_api;
-use crate::texts::*;
 use std::path::Path;
 use color_print::cstr;
+
+use crate::{
+  fs_api,
+  config::ShipConfig,
+  consts::*
+};
+
 
 
 #[derive(Parser,Debug)]
@@ -52,13 +56,13 @@ impl Init {
     fs_api::ensure_fresh_dir(".",self.bin).await?;
     git2::Repository::init(".").unwrap();
 
-    fs::write(".gitignore",GITIGNORE).await?;
-    fs::create_dir_all("src").await?;
+    fs::write(paths::GITIGNORE,texts::GITIGNORE).await?;
+    fs::create_dir_all(paths::SOURCE_DIR).await?;
     if self.bin {
-      fs::write("src/main.c",MAIN_C).await?;
+      fs::write(paths::MAIN,texts::MAIN).await?;
     } else {
       let name=self.name.to_uppercase();
-      fs::write("src/lib.c",format!("#ifndef {name}_H\n#define {name}_H\n{LIB_C}\n#endif\n")).await?;
+      fs::write(paths::LIB,format!("#ifndef {name}_H\n#define {name}_H\n{}\n#endif\n",texts::LIB)).await?;
     }
 
     let mut config=ShipConfig::default();
@@ -68,7 +72,7 @@ impl Init {
       config.package.edition=edition;
     }
 
-    config.save(ShipConfig::CONFIG_FILE_NAME).await?;
+    config.save(paths::CONFIG_FILE).await?;
     Ok(())
   }
 }
