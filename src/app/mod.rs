@@ -1,7 +1,8 @@
 
-
+pub mod new;
 pub mod init;
 
+use new::*;
 use init::*;
 use tokio::io;
 use clap::Parser;
@@ -9,7 +10,7 @@ use clap::Parser;
 
 #[derive(Parser,Debug)]
 pub enum App {
-  New,
+  New(New),
   Init(Init),
   Clean,
   Check,
@@ -29,7 +30,8 @@ pub enum App {
 impl App {
   pub async fn run(self)-> io::Result<()> {
     match self {
-      Self::Init(mut this)=> this.run().await,
+      Self::Init(this)=> this.run().await,
+      Self::New(this)=> this.run().await,
       _=> unimplemented!()
     }
   }
