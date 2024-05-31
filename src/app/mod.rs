@@ -1,9 +1,12 @@
 
 pub mod new;
 pub mod init;
+pub mod clean;
+
 
 use new::*;
 use init::*;
+use clean::*;
 use tokio::io;
 use clap::Parser;
 
@@ -12,7 +15,7 @@ use clap::Parser;
 pub enum App {
   New(New),
   Init(Init),
-  Clean,
+  Clean(Clean),
   Check,
   Build,
   Run,
@@ -32,6 +35,7 @@ impl App {
     match self {
       Self::Init(this)=> this.run().await,
       Self::New(this)=> this.run().await,
+      Self::Clean(cleaner)=> cleaner.clean().await,
       _=> unimplemented!()
     }
   }
