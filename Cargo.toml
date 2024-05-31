@@ -15,7 +15,6 @@ codegen-units = 1
 clap = "4.4.10"
 git2 = "0.18.1"
 regex = "1.10.2"
-requestty = "0.5.0"
 serde_json = "1.0.108"
 clap-verbosity-flag = "2.1.0"
 tokio = { version = "1.35.0", features = ["fs", "rt", "process", "macros", "rt-multi-thread"] }
@@ -80,5 +79,6 @@ anyhow = "1.0.86"
 anstyle = "1.0.7"
 anstream = "0.6.14"
 annotate-snippets = "0.11.2"
+inquire = { version = "0.7.5", features = ["chrono", "console", "editor", "tempfile", "termion"] }
 
 

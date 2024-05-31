@@ -4,8 +4,9 @@ use tokio::*;
 use std::path::Path;
 use color_print::cformat;
 
+
 use crate::{
-  prompt::confirm,
+  confirm,
   consts::paths
 };
 
@@ -26,8 +27,7 @@ pub async fn ensure_fresh_dir<P: AsRef<Path>>(path: P,is_bin: bool)-> io::Result
     }
   }
 
-  let msg=cformat!("<y>warning</y>: {} is not an empty directory. Do you want to continue?",path.display());
-  let prompt=confirm(&msg,false);
+  let prompt=confirm!(&cformat!("<#ffff00>warning</#ffff00>: {} is not an empty directory. Do you want to continue?",path.display()),false);
 
   match prompt {
     false=> Err(io::Error::new(
@@ -35,7 +35,7 @@ pub async fn ensure_fresh_dir<P: AsRef<Path>>(path: P,is_bin: bool)-> io::Result
       format!("{} is not an empty directory",path.display())
     )),
     _=> {
-      let _=(// Just ignoring the NotFound error.
+      let _=(// Just ignoring the NotFound errors that may appear..
         fs::remove_dir_all(paths::GIT_REPO_DIR).await,
         fs::remove_file(paths::GITIGNORE).await,
         fs::remove_file(paths::CONFIG_FILE).await,

@@ -1,16 +1,13 @@
 
-use requestty::Question;
 
-
-pub fn confirm(msg: &str,default: bool)-> bool {
-  let q=Question::confirm(msg)
-  .default(default)
-  .build();
-
-  match requestty::prompt_one(q) {
-    Ok(res)=> res.as_bool().unwrap(),
-    _=> default
-  }
+#[macro_export]
+macro_rules! confirm {
+  ($msg:expr,$default:expr)=> {
+    inquire::Confirm::new($msg)
+    .with_default($default)
+    .prompt().unwrap()
+  };
 }
+
 
 
