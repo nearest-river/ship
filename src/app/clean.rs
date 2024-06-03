@@ -39,9 +39,20 @@ impl Clean {
       }
     }
     fs::remove_dir_all(paths::TARGET_DIR).await?;
+    let (bytes,unit)=human_readable_bytes(size);
 
-    color_print::cprintln!("\t<bold><g>Removed</g></bold> {count} files, {size} bytes total");
+    color_print::cprintln!("\t<bold><g>Removed</g></bold> {count} files, {bytes:.1}{unit} total");
     Ok(())
   }
 }
+
+
+fn human_readable_bytes(bytes: u64)-> (f32,&'static str) {
+  pub const UNITS: [&'static str;7]=["B","KiB","MiB","GiB","TiB","PiB","EiB"];
+  let bytes=bytes as f32;
+  let i=((bytes.log2()/10.) as usize).min(UNITS.len()-1);
+
+  (bytes/1024_f32.powi(i as _),UNITS[i])
+}
+
 
