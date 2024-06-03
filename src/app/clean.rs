@@ -23,10 +23,10 @@ impl Clean {
     let mut size=0u64;
     let mut queue=VecDeque::<Box<Path>>::new();
     queue.push_back(Path::new(paths::TARGET_DIR).into());
-  
+
     while let Some(path)=queue.pop_back() {
       let mut iter=fs::read_dir(&path).await?;
-  
+
       while let Some(entry)=iter.next_entry().await? {
         let metadata=entry.metadata().await?;
         if metadata.is_dir() {
@@ -38,8 +38,9 @@ impl Clean {
         size+=metadata.size();
       }
     }
+    fs::remove_dir_all(paths::TARGET_DIR).await?;
 
-    color_print::cprintln!("<g>Removed</g> {count} files, {size} bytes total");
+    color_print::cprintln!("\t<bold><g>Removed</g></bold> {count} files, {size} bytes total");
     Ok(())
   }
 }
