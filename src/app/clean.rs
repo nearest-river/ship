@@ -1,7 +1,13 @@
 
 use tokio::*;
 use clap::Parser;
-use crate::consts::paths;
+
+
+use crate::{
+  config::ShipConfig,
+  consts::paths,
+  skip_handeling
+};
 
 use std::{
   path::Path,
@@ -19,13 +25,13 @@ pub struct Clean;
 
 impl Clean {
   pub async fn clean(self)-> io::Result<()> {
+    drop(ShipConfig::fetch_config().await?);// just to make sure that root of the project is the cwd.
     let mut count=0usize;
     let mut size=0u64;
-    let mut queue=VecDeque::<Box<Path>>::new();
-    queue.push_back(Path::new(paths::TARGET_DIR).into());
+    let mut queue=VecDeque::from_iter::<[Box<_>;1]>([Path::new(paths::TARGET_DIR).into()]);
 
     while let Some(path)=queue.pop_back() {
-      let mut iter=fs::read_dir(&path).await?;
+      let mut iter=skip_handeling!(fs::read_dir(&path).await => io::ErrorKind::NotFound => continue)?;
 
       while let Some(entry)=iter.next_entry().await? {
         let metadata=entry.metadata().await?;
@@ -38,10 +44,15 @@ impl Clean {
         size+=metadata.size();
       }
     }
-    fs::remove_dir_all(paths::TARGET_DIR).await?;
-    let (bytes,unit)=human_readable_bytes(size);
+    skip_handeling!(fs::remove_dir_all(paths::TARGET_DIR).await => io::ErrorKind::NotFound => Ok(()))?;
 
-    color_print::cprintln!("\t<bold><g>Removed</g></bold> {count} files, {bytes:.1}{unit} total");
+    match size {
+      1024.. => {
+        let (bytes,unit)=human_readable_bytes(size);
+        color_print::cprintln!("\t<bold><g>Removed</g></bold> {count} files, {bytes:.1}{unit} total",)
+      },
+      _=> color_print::cprintln!("\t<bold><g>Removed</g></bold> {count} files, {size}B total")
+    }
     Ok(())
   }
 }
@@ -54,5 +65,6 @@ fn human_readable_bytes(bytes: u64)-> (f32,&'static str) {
 
   (bytes/1024_f32.powi(i as _),UNITS[i])
 }
+
 
 
