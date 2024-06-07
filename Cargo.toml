@@ -17,7 +17,7 @@ git2 = "0.18.1"
 regex = "1.10.2"
 serde_json = "1.0.108"
 clap-verbosity-flag = "2.1.0"
-tokio = { version = "1.35.0", features = ["fs", "rt", "process", "macros", "rt-multi-thread"] }
+tokio = { version = "1.35.0", features = [ "full" ] } # ["fs", "rt", "process", "macros", "rt-multi-thread"] }
 serde = { version = "1.0.193", features = ["derive"] }
 libc = { version = "0.2.155", features = ["const-extern-fn", "extra_traits"] }
 gccjit = { version = "2.0.0", features = ["master"] }
