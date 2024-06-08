@@ -21,8 +21,11 @@ use std::os::unix::fs::MetadataExt;
 
 #[derive(Parser,Debug)]
 pub struct Clean {
+  #[arg(long)]
   doc: bool,
+  #[arg(long,short)]
   dry_run: bool,
+  #[arg(long,short)]
   quite: bool
 }
 
@@ -63,18 +66,23 @@ impl Clean {
       }
     };
 
-    if self.quite {
-      return Ok(());
+    if !self.quite {
+      self.display_summary(msg,size,count);
     }
 
-    match size {
-      1024.. => {
-        let (bytes,unit)=human_readable_bytes(size);
-        color_print::cprintln!("\t<bold><g>{}</g></bold> {count} files, {bytes:.1}{unit} total",msg)
-      },
-      _=> color_print::cprintln!("\t<bold><g>{}</g></bold> {count} files, {size}B total",msg)
-    }
     Ok(())
+  }
+
+  fn display_summary(&self,msg: &str,size: u64,count: usize) {
+    let txt=match size {
+      1024.. => {
+        let (size,unit)=human_readable_bytes(size);
+        color_print::cformat!("     <g,bold>{msg}</g,bold> {count} files, {size:.1}{unit} total")
+      },
+      _=> color_print::cformat!("     <g,bold>{msg}</g,bold> {count} files, {size}B total")
+    };
+
+    tracing::info!("{txt}");
   }
 }
 
