@@ -25,3 +25,16 @@ macro_rules! skip_handeling {
   };
 }
 
+
+#[macro_export]
+macro_rules! panik {
+  (code: $code:expr,$($arg:tt)*)=> {{
+    tracing::error!($($arg)*);
+    std::process::exit($code);
+  }};
+  ($($arg:tt)*)=> {{
+    tracing::error!($($arg)*);
+    std::process::exit(1);
+  }};
+}
+

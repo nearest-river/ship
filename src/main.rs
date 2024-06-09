@@ -26,10 +26,7 @@ async fn main() {
 
   match App::parse().run().await {
     Ok(_)=> (),
-    Err(err)=> {
-      tracing::error!("{err}");
-      std::process::exit(err.downcast_ref::<i32>().cloned().unwrap_or(1));
-    },
+    Err(err)=> panik!(code: err.downcast_ref::<i32>().cloned().unwrap_or(1),"{err}")
   }
 }
 

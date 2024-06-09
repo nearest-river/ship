@@ -10,10 +10,7 @@ use std::{
 };
 
 use crate::{
-  fs_api,
-  consts::*,
-  config::ShipConfig,
-  vcs::VersionControl
+  config::ShipConfig, consts::*, fs_api, panik, vcs::VersionControl
 };
 
 
@@ -47,7 +44,7 @@ impl Init {
   pub async fn run(mut self)-> anyhow::Result<()> {
     match (self.bin,self.lib) {
       (false,false)=> self.bin=true,
-      (true,true)=> panic!(cstr!("<#ff0000>error</#ff0000>: can't specify both lib and binary outputs")),
+      (true,true)=> panik!(cstr!("<#ff0000>error</#ff0000>: can't specify both lib and binary outputs")),
       _=> {}
     }
 
