@@ -73,7 +73,22 @@ impl Init {
     }
 
     config.save(paths::CONFIG_FILE).await?;
+
+    if !self.quite {
+      display_summary(self.bin);
+    }
+
     Ok(())
   }
 }
 
+
+fn display_summary(is_bin: bool) {
+  let package_type=match is_bin {
+    true=> "binary (application)",
+    _=> "library"
+  };
+
+  tracing::info!("    {} {package_type} package",cstr!("<g,bold>Created</g,bold>"));
+  tracing::info!("{}: see more `{}` keys and their definitions at {}",cstr!("<cyan,bold>note</cyan,bold>"),paths::CONFIG_FILE,url::DOCUMENTATION);
+}
