@@ -7,7 +7,6 @@ pub mod clean;
 use new::*;
 use init::*;
 use clean::*;
-use tokio::io;
 use clap::Parser;
 
 
@@ -31,7 +30,7 @@ pub enum App {
 
 
 impl App {
-  pub async fn run(self)-> io::Result<()> {
+  pub async fn run(self)-> anyhow::Result<()> {
     match self {
       Self::Init(this)=> this.run().await,
       Self::New(this)=> this.run().await,

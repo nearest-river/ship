@@ -1,10 +1,13 @@
 
-use tokio::*;
 use super::Init;
 use clap::Parser;
 use std::path::Path;
 use color_print::cstr;
 
+use tokio::{
+  fs,
+  io
+};
 
 
 #[derive(Parser,Debug)]
@@ -29,7 +32,7 @@ pub struct New {
 }
 
 impl New {
-  pub async fn run(self)-> io::Result<()> {
+  pub async fn run(self)-> anyhow::Result<()> {
     if let Err(err)=fs::create_dir(&self.path).await {
       match err.kind() {
         io::ErrorKind::AlreadyExists=> panic!("{}: destination `{}` already exists.\n\nUse `ship init` to initialize the directory",cstr!("<#ff0000>error</#ff0000>"),self.path.display()),

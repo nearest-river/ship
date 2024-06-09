@@ -1,9 +1,9 @@
 
-
-use tokio::*;
+use tokio::fs;
 use clap::Parser;
 use std::path::Path;
 use color_print::cstr;
+
 
 use crate::{
   fs_api,
@@ -37,7 +37,7 @@ pub struct Init {
 
 
 impl Init {
-  pub async fn run(mut self)-> io::Result<()> {
+  pub async fn run(mut self)-> anyhow::Result<()> {
     match (self.bin,self.lib) {
       (false,false)=> self.bin=true,
       (true,true)=> panic!(cstr!("<#ff0000>error</#ff0000>: can't specify both lib and binary outputs")),
