@@ -21,7 +21,7 @@ impl VersionControl {
       VersionControl::Hg=> todo!(),
       VersionControl::Pijul=> todo!(),
       VersionControl::Fossile=> todo!(),
-      VersionControl::None=> todo!(),
+      VersionControl::None=> (),
     };
 
     Ok(())
