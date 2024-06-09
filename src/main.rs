@@ -6,6 +6,7 @@ pub mod config;
 pub mod fs_api;
 #[macro_use]
 pub mod macros;
+pub mod vcs;
 
 
 use app::App;
