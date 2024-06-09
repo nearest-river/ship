@@ -2,7 +2,7 @@
 use super::Init;
 use clap::Parser;
 use std::path::Path;
-use color_print::cstr;
+use crate::consts::event;
 
 use tokio::{
   fs,
@@ -37,7 +37,7 @@ impl New {
   pub async fn run(self)-> anyhow::Result<()> {
     if let Err(err)=fs::create_dir(&self.path).await {
       match err.kind() {
-        io::ErrorKind::AlreadyExists=> tracing::error!("{}: destination `{}` already exists.\n\nUse `ship init` to initialize the directory",cstr!("<#ff0000,bold>error</#ff0000,bold>"),self.path.display()),
+        io::ErrorKind::AlreadyExists=> tracing::error!("{}: destination `{}` already exists.\n\nUse `ship init` to initialize the directory",event::ERROR,self.path.display()),
         _=> tracing::error!("{err}")
       }
       std::process::exit(err.raw_os_error().unwrap_or(1));

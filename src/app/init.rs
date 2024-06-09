@@ -1,8 +1,6 @@
 
 use tokio::fs;
 use clap::Parser;
-use color_print::cstr;
-
 
 use std::{
   path::Path,
@@ -10,7 +8,11 @@ use std::{
 };
 
 use crate::{
-  config::ShipConfig, consts::*, fs_api, panik, vcs::VersionControl
+  panik,
+  fs_api,
+  consts::*,
+  config::ShipConfig,
+  vcs::VersionControl
 };
 
 
@@ -44,14 +46,14 @@ impl Init {
   pub async fn run(mut self)-> anyhow::Result<()> {
     match (self.bin,self.lib) {
       (false,false)=> self.bin=true,
-      (true,true)=> panik!(cstr!("<#ff0000>error</#ff0000>: can't specify both lib and binary outputs")),
+      (true,true)=> panik!("{}: can't specify both lib and binary outputs",event::ERROR),
       _=> {}
     }
 
     self.path=fs::canonicalize(self.path).await?.into_boxed_path();
     if self.name.is_empty() {
       self.name=self.path.file_name()
-      .expect(cstr!("<#ff0000>error</#ff0000>: cannot create a project in the root directory."))
+      .expect(msg::PROJECT_IN_ROOT_DIR)
       .to_str().unwrap()
       .into();
     }
@@ -93,6 +95,6 @@ fn display_summary(is_bin: bool) {
     _=> "library"
   };
 
-  tracing::info!("    {} {package_type} package",cstr!("<g,bold>Created</g,bold>"));
-  tracing::info!("{}: see more `{}` keys and their definitions at {}",cstr!("<cyan,bold>note</cyan,bold>"),paths::CONFIG_FILE,url::DOCUMENTATION);
+  tracing::info!("{} {package_type} package",event::CREATED);
+  tracing::info!("{}: see more `{}` keys and their definitions at {}",event::NOTE,paths::CONFIG_FILE,url::DOCUMENTATION);
 }

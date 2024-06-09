@@ -7,7 +7,10 @@ use color_print::cformat;
 
 use crate::{
   confirm,
-  consts::paths
+  consts::{
+    paths,
+    event
+  }
 };
 
 
@@ -27,7 +30,7 @@ pub async fn ensure_fresh_dir<P: AsRef<Path>>(path: P,is_bin: bool)-> io::Result
     }
   }
 
-  let prompt=confirm!(&cformat!("<#ffff00>warning</#ffff00>: {} is not an empty directory. Do you want to continue?",path.display()),false);
+  let prompt=confirm!(&cformat!("{}: `{}` is not an empty directory. Do you want to continue?",event::WARNING,path.display()),false);
 
   match prompt {
     false=> Err(io::Error::new(

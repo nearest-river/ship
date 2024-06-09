@@ -7,9 +7,10 @@ use tokio::{
 };
 
 use crate::{
-  config::ShipConfig,
+  consts::event,
   consts::paths,
-  skip_handeling
+  skip_handeling,
+  config::ShipConfig
 };
 
 use std::{
@@ -62,10 +63,10 @@ impl Clean {
     }
 
     let msg=match self.dry_run {
-      true=> "Summary",
+      true=> event::SUMMARY,
       _=> {
         skip_handeling!(fs::remove_dir_all(paths::TARGET_DIR).await => io::ErrorKind::NotFound => Ok(()))?;
-        "Removed"
+        event::REMOVED
       }
     };
 
@@ -80,9 +81,9 @@ impl Clean {
     let txt=match size {
       1024.. => {
         let (size,unit)=human_readable_bytes(size);
-        color_print::cformat!("     <g,bold>{msg}</g,bold> {count} files, {size:.1}{unit} total")
+        color_print::cformat!("{msg} {count} files, {size:.1}{unit} total")
       },
-      _=> color_print::cformat!("     <g,bold>{msg}</g,bold> {count} files, {size}B total")
+      _=> color_print::cformat!("{msg} {count} files, {size}B total")
     };
 
     tracing::info!("{txt}");
