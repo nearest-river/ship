@@ -1,14 +1,19 @@
 
 use tokio::fs;
 use clap::Parser;
-use std::path::Path;
 use color_print::cstr;
 
 
+use std::{
+  path::Path,
+  str::FromStr
+};
+
 use crate::{
   fs_api,
+  consts::*,
   config::ShipConfig,
-  consts::*
+  vcs::VersionControl
 };
 
 
@@ -17,6 +22,8 @@ use crate::{
 pub struct Init {
   #[arg(default_value=".")]
   pub path: Box<Path>,
+  #[arg(long,default_value="git")]
+  pub vcs: Box<str>,
   #[arg(long)]
   pub bin: bool,
   #[arg(long)]
@@ -54,7 +61,7 @@ impl Init {
 
 
     fs_api::ensure_fresh_dir(".",self.bin).await?;
-    git2::Repository::init(".").unwrap();
+    VersionControl::from_str(&self.vcs)?.init(".")?;
 
     fs::write(paths::GITIGNORE,texts::GITIGNORE).await?;
     fs::create_dir_all(paths::SOURCE_DIR).await?;

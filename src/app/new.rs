@@ -13,22 +13,24 @@ use tokio::{
 #[derive(Parser,Debug)]
 pub struct New {
   path: Box<Path>,
+  #[arg(long,default_value="git")]
+  vcs: Box<str>,
   #[arg(long)]
-  pub bin: bool,
+  bin: bool,
   #[arg(long)]
-  pub lib: bool,
+  lib: bool,
   #[arg(long)]
-  pub edition: Option<u16>,
+  edition: Option<u16>,
   #[arg(long,default_value="")]
-  pub name: Box<str>,
+  name: Box<str>,
   #[arg(long,default_value="todo")]
-  pub registry: Box<str>,
+  registry: Box<str>,
   #[arg(long,default_value="false")]
-  pub quite: bool,
+  quite: bool,
   #[arg(long,default_value="")]
-  pub config: Box<str>,
+  config: Box<str>,
   #[arg(short='Z',default_value="")]
-  pub flags: Box<str>
+  flags: Box<str>
 }
 
 impl New {
@@ -40,8 +42,8 @@ impl New {
       }
     }
 
-    let New { path,bin,lib,edition,name,registry,quite,config,flags }=self;
-    Init { path,bin,lib,edition,name,registry,quite,config,flags }.run().await
+    let New { path,vcs,bin,lib,edition,name,registry,quite,config,flags }=self;
+    Init { path,vcs,bin,lib,edition,name,registry,quite,config,flags }.run().await
   }
 }
 
