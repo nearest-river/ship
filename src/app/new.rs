@@ -37,9 +37,10 @@ impl New {
   pub async fn run(self)-> anyhow::Result<()> {
     if let Err(err)=fs::create_dir(&self.path).await {
       match err.kind() {
-        io::ErrorKind::AlreadyExists=> panic!("{}: destination `{}` already exists.\n\nUse `ship init` to initialize the directory",cstr!("<#ff0000>error</#ff0000>"),self.path.display()),
-        _=> panic!("{err}")
+        io::ErrorKind::AlreadyExists=> tracing::error!("{}: destination `{}` already exists.\n\nUse `ship init` to initialize the directory",cstr!("<#ff0000,bold>error</#ff0000,bold>"),self.path.display()),
+        _=> tracing::error!("{err}")
       }
+      std::process::exit(err.raw_os_error().unwrap_or(1));
     }
 
     let New { path,vcs,bin,lib,edition,name,registry,quite,config,flags }=self;

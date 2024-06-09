@@ -24,9 +24,12 @@ async fn main() {
   .with_target(false)
   .init();
 
-
-  App::parse()
-  .run().await
-  .unwrap();
+  match App::parse().run().await {
+    Ok(_)=> todo!(),
+    Err(err)=> {
+      // tracing::error!("{err}");
+      std::process::exit(err.downcast_ref::<i32>().cloned().unwrap_or(1));
+    },
+  }
 }
 
