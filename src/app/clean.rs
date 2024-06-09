@@ -8,7 +8,7 @@ use tokio::{
 
 use crate::{
   consts::event,
-  consts::paths,
+  consts::path,
   skip_handeling,
   config::ShipConfig
 };
@@ -42,9 +42,9 @@ impl Clean {
     let mut queue=VecDeque::<Box<Path>>::new();
 
     if self.doc {
-      queue.push_back(Path::new(paths::DOC_DIR).into());
+      queue.push_back(Path::new(path::DOC_DIR).into());
     }
-    queue.push_back(Path::new(paths::TARGET_DIR).into());
+    queue.push_back(Path::new(path::TARGET_DIR).into());
 
 
     while let Some(path)=queue.pop_back() {
@@ -65,7 +65,7 @@ impl Clean {
     let msg=match self.dry_run {
       true=> event::SUMMARY,
       _=> {
-        skip_handeling!(fs::remove_dir_all(paths::TARGET_DIR).await => io::ErrorKind::NotFound => Ok(()))?;
+        skip_handeling!(fs::remove_dir_all(path::TARGET_DIR).await => io::ErrorKind::NotFound => Ok(()))?;
         event::REMOVED
       }
     };

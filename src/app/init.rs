@@ -62,13 +62,13 @@ impl Init {
     fs_api::ensure_fresh_dir(self.path,self.bin).await?;
     VersionControl::from_str(&self.vcs)?.init(".")?;
 
-    fs::write(paths::GITIGNORE,texts::GITIGNORE).await?;
-    fs::create_dir_all(paths::SOURCE_DIR).await?;
+    fs::write(path::GITIGNORE,source_code::GITIGNORE).await?;
+    fs::create_dir_all(path::SOURCE_DIR).await?;
     if self.bin {
-      fs::write(paths::MAIN,texts::MAIN).await?;
+      fs::write(path::MAIN,source_code::MAIN).await?;
     } else {
       let name=self.name.to_uppercase();
-      fs::write(paths::LIB,format!("#ifndef {name}_H\n#define {name}_H\n{}\n#endif\n",texts::LIB)).await?;
+      fs::write(path::LIB,format!("#ifndef {name}_H\n#define {name}_H\n{}\n#endif\n",source_code::LIB)).await?;
     }
 
     let mut config=ShipConfig::default();
@@ -78,7 +78,7 @@ impl Init {
       config.package.edition=edition;
     }
 
-    config.save(paths::CONFIG_FILE).await?;
+    config.save(path::CONFIG_FILE).await?;
 
     if !self.quite {
       display_summary(self.bin);
@@ -96,5 +96,5 @@ fn display_summary(is_bin: bool) {
   };
 
   tracing::info!("{} {package_type} package",event::CREATED);
-  tracing::info!("{}: see more `{}` keys and their definitions at {}",event::NOTE,paths::CONFIG_FILE,url::DOCUMENTATION);
+  tracing::info!("{}: see more `{}` keys and their definitions at {}",event::NOTE,path::CONFIG_FILE,url::DOCUMENTATION);
 }

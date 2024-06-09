@@ -17,7 +17,7 @@ use std::{
 };
 
 use crate::{
-  consts::paths,
+  consts::path,
   skip_handeling
 };
 
@@ -43,7 +43,7 @@ impl ShipConfig {
   pub async fn fetch_config()-> io::Result<ShipConfig> {
     while !env::current_dir()?.eq(OsStr::new("/")) {
       let buf=skip_handeling! {
-        fs::read_to_string(paths::CONFIG_FILE).await => io::ErrorKind::NotFound => {
+        fs::read_to_string(path::CONFIG_FILE).await => io::ErrorKind::NotFound => {
           env::set_current_dir("..")?;
           continue
         }

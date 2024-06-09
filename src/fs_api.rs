@@ -8,7 +8,7 @@ use color_print::cformat;
 use crate::{
   confirm,
   consts::{
-    paths,
+    path,
     event
   }
 };
@@ -39,13 +39,13 @@ pub async fn ensure_fresh_dir<P: AsRef<Path>>(path: P,is_bin: bool)-> io::Result
     )),
     _=> {
       let _=(// Just ignoring the NotFound errors that may appear..
-        fs::remove_dir_all(paths::GIT_REPO_DIR).await,
-        fs::remove_file(paths::GITIGNORE).await,
-        fs::remove_file(paths::CONFIG_FILE).await,
-        fs::remove_file(paths::LOCK_FILE).await,
+        fs::remove_dir_all(path::GIT_REPO_DIR).await,
+        fs::remove_file(path::GITIGNORE).await,
+        fs::remove_file(path::CONFIG_FILE).await,
+        fs::remove_file(path::LOCK_FILE).await,
         match is_bin {
-          true=> fs::remove_file(paths::MAIN).await,
-          _=> fs::remove_file(paths::LIB).await
+          true=> fs::remove_file(path::MAIN).await,
+          _=> fs::remove_file(path::LIB).await
         }
       );
 
