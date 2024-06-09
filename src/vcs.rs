@@ -15,14 +15,16 @@ pub enum VersionControl {
 
 
 impl VersionControl {
-  pub fn init<P: AsRef<std::path::Path>>(self,_path: P)-> anyhow::Result<()> {
+  pub fn init<P: AsRef<std::path::Path>>(self,path: P)-> anyhow::Result<()> {
     match self {
-      VersionControl::Git=> todo!(),
+      VersionControl::Git=> { git2::Repository::init(path)?; },
       VersionControl::Hg=> todo!(),
       VersionControl::Pijul=> todo!(),
       VersionControl::Fossile=> todo!(),
       VersionControl::None=> todo!(),
     };
+
+    Ok(())
   }
 }
 
