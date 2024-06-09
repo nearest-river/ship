@@ -60,7 +60,7 @@ impl Init {
     }
 
 
-    fs_api::ensure_fresh_dir(".",self.bin).await?;
+    fs_api::ensure_fresh_dir(self.path,self.bin).await?;
     VersionControl::from_str(&self.vcs)?.init(".")?;
 
     fs::write(paths::GITIGNORE,texts::GITIGNORE).await?;
