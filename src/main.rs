@@ -25,9 +25,9 @@ async fn main() {
   .init();
 
   match App::parse().run().await {
-    Ok(_)=> todo!(),
+    Ok(_)=> (),
     Err(err)=> {
-      // tracing::error!("{err}");
+      tracing::error!("{err}");
       std::process::exit(err.downcast_ref::<i32>().cloned().unwrap_or(1));
     },
   }
