@@ -2,11 +2,13 @@
 pub mod new;
 pub mod init;
 pub mod clean;
+pub mod build;
 
 
 use new::*;
 use init::*;
 use clean::*;
+use build::*;
 use clap::Parser;
 
 
@@ -16,7 +18,7 @@ pub enum App {
   Init(Init),
   Clean(Clean),
   Check,
-  Build,
+  Build(Build),
   Run,
   Test,
   Bench,
@@ -35,6 +37,7 @@ impl App {
       Self::Init(this)=> this.run().await,
       Self::New(this)=> this.run().await,
       Self::Clean(cleaner)=> cleaner.clean().await,
+      Self::Build(builder)=> builder.build().await,
       _=> unimplemented!()
     }
   }
