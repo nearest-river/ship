@@ -15,12 +15,9 @@ use crate::{
 
 use std::{
   path::Path,
+  fs::Metadata,
   collections::VecDeque,
 };
-
-#[cfg(not(target_os="windows"))]
-use std::os::unix::fs::MetadataExt;
-
 
 
 #[derive(Parser,Debug)]
@@ -58,7 +55,7 @@ impl Clean {
         }
 
         count+=1;
-        size+=metadata.size();
+        size+=file_size(&metadata);
       }
     }
 
@@ -99,5 +96,10 @@ fn human_readable_bytes(bytes: u64)-> (f32,&'static str) {
   (bytes/1024_f32.powi(i as _),UNITS[i])
 }
 
-
+fn file_size(metadata: &Metadata)-> u64 {
+  #[cfg(not(target_os="windows"))]
+  return std::os::unix::fs::MetadataExt::size(metadata);
+  #[cfg(target_os="windows")]
+  return std::os::windows::fs::MetadataExt::file_size(metadata);
+}
 
