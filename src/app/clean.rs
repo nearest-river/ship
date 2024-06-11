@@ -75,15 +75,13 @@ impl Clean {
   }
 
   fn display_summary(&self,msg: &str,size: u64,count: usize) {
-    let txt=match size {
+    match size {
       1024.. => {
         let (size,unit)=human_readable_bytes(size);
-        color_print::cformat!("{msg} {count} files, {size:.1}{unit} total")
+        tracing::info!("{msg} {count} files, {size:.1}{unit} total")
       },
-      _=> color_print::cformat!("{msg} {count} files, {size}B total")
-    };
-
-    tracing::info!("{txt}");
+      _=> tracing::info!("{msg} {count} files, {size}B total")
+    }
   }
 }
 
