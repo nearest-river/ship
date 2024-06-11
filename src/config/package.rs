@@ -14,7 +14,7 @@ use serde::{
 #[derive(Debug,Serialize,Deserialize)]
 pub struct Package {
   pub name: Box<str>,
-  pub edition: u16,
+  pub edition: Option<u16>,
   pub version: Option<Version>,
   pub c_version: Option<Version>,
   pub authors: Option<Vec<Box<str>>>,
@@ -53,7 +53,7 @@ impl Default for Package {
   fn default()-> Self {
     Package {
       name: Default::default(),
-      edition: 2020,
+      edition: Some(2020),
       version: None,
       c_version: None,
       authors: None,

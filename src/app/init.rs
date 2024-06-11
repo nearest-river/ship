@@ -74,10 +74,7 @@ impl Init {
     let mut config=ShipConfig::default();
 
     config.package.name=self.name;
-    if let Some(edition)=self.edition {
-      config.package.edition=edition;
-    }
-
+    config.package.edition=self.edition;
     config.save(path::CONFIG_FILE).await?;
 
     if !self.quite {
