@@ -17,11 +17,9 @@ pub struct Build {
   #[arg(long,short)]
   quite: bool,
   #[arg(long)]
-  config: Option<Box<str>>,
+  config: Option<Vec<Box<str>>>,
   #[arg(long,short='Z')]
   flags: Option<Box<str>>,
-  #[arg(long,short)]
-  help: bool,
   #[arg(long,short)]
   package: Option<Box<str>>,
   #[arg(long)]
@@ -53,7 +51,7 @@ pub struct Build {
   #[arg(long)]
   profile: Option<Box<str>>,
   #[arg(long,short)]
-  jobs: usize,
+  jobs: Option<usize>,
   #[arg(long)]
   keep_going: bool,
   #[arg(long)]
@@ -76,7 +74,9 @@ pub struct Build {
   #[arg(long)]
   locked: bool,
   #[arg(long)]
-  offline: bool
+  offline: bool,
+  #[arg(short='C')]
+  cwd: Option<Box<Path>>,
 }
 
 
