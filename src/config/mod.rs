@@ -40,7 +40,7 @@ impl ShipConfig {
   }
 
   #[must_use]
-  pub async fn fetch_config()-> io::Result<ShipConfig> {
+  pub async fn fetch_config()-> anyhow::Result<ShipConfig> {
     while !env::current_dir()?.eq(OsStr::new("/")) {
       let buf=skip_handeling! {
         fs::read_to_string(path::CONFIG_FILE).await => io::ErrorKind::NotFound => {
@@ -49,10 +49,10 @@ impl ShipConfig {
         }
       }?;
 
-      return Ok(toml::from_str::<ShipConfig>(&buf).unwrap());
+      return Ok(toml::from_str::<ShipConfig>(&buf)?);
     }
 
-    Err(Error::new(ErrorKind::PermissionDenied,"cannot read project from root directory."))
+    Err(Error::new(ErrorKind::PermissionDenied,"cannot read project from root directory.").into())
   }
 }
 
