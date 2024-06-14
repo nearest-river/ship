@@ -1,7 +1,26 @@
 
 
 use std::str::FromStr;
-use crate::consts::msg;
+use tokio::process::Command;
+
+
+use crate::consts::{
+  msg,
+  event
+};
+
+macro_rules! spawn {
+  ($command:literal $(,$arg:expr)*)=> {
+    Command::new($command)
+    .args(["init","--","."])
+    $(
+      .arg($arg)
+    )*
+    .status()
+    .await?
+  };
+}
+
 
 
 #[derive(Debug,Clone)]
@@ -15,12 +34,28 @@ pub enum VersionControl {
 
 
 impl VersionControl {
-  pub fn init<P: AsRef<std::path::Path>>(self,path: P)-> anyhow::Result<()> {
+  pub async fn init(self)-> anyhow::Result<()> {
     match self {
-      VersionControl::Git=> { git2::Repository::init(path)?; },
-      VersionControl::Hg=> todo!(),
-      VersionControl::Pijul=> todo!(),
-      VersionControl::Fossile=> todo!(),
+      VersionControl::Git=> drop(
+        tokio::task::spawn_blocking(|| git2::Repository::init(",")).await??
+      ),
+      VersionControl::Hg=> { spawn!("hg"); },
+      VersionControl::Pijul=> { spawn!("pijul"); },
+      VersionControl::Fossile=> {
+        let db_path = ".fossil";
+        let init_code=spawn!("fossil",&db_path);
+
+        // open it in that new directory
+        let open_code=Command::new("fossil")
+        .args(["open","--"])
+        .arg(db_path)
+        .status().await?;
+
+        match (init_code.success() && open_code.success(),init_code.code(),open_code.code()) {
+          (false,Some(init_code),Some(open_code))=> panik!(code: init_code|open_code,"{}: Failed to initialize fossile repository",event::ERROR),
+          _=> {}
+        }
+      },
       VersionControl::None=> (),
     };
 
