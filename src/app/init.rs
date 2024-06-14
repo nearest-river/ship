@@ -60,10 +60,17 @@ impl Init {
 
 
     fs_api::ensure_fresh_dir(self.path,self.bin).await?;
-    VersionControl::from_str(&self.vcs)?.init(".")?;
 
-    fs::write(path::GITIGNORE,source_code::GITIGNORE).await?;
-    fs::create_dir_all(path::SOURCE_DIR).await?;
+    let (vcs_res,gitigore_res,src_dir_res)=tokio::join!{
+      VersionControl::from_str(&self.vcs)?.init("."),
+      fs::write(path::GITIGNORE,source_code::GITIGNORE),
+      fs::create_dir_all(path::SOURCE_DIR)
+    };
+    vcs_res?;
+    src_dir_res?;
+    gitigore_res?;
+
+
     if self.bin {
       fs::write(path::MAIN,source_code::MAIN).await?;
     } else {
