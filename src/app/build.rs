@@ -1,7 +1,23 @@
 
 
+use std::env;
 use clap::Parser;
 use std::path::Path;
+
+use tokio::{
+  fs,
+  io::ErrorKind
+};
+
+use crate::{
+  skip_handeling,
+  config::ShipConfig,
+  consts::{
+    msg,
+    path
+  }
+};
+
 
 
 #[derive(Parser,Debug)]
@@ -18,14 +34,14 @@ pub struct Build {
   quite: bool,
   #[arg(long)]
   config: Option<Vec<Box<str>>>,
-  #[arg(long,short='Z')]
+  #[arg(short='Z')]
   flags: Option<Box<str>>,
   #[arg(long,short)]
   package: Option<Box<str>>,
   #[arg(long)]
   workspace: bool,
   #[arg(long)]
-  exclude: Option<Box<str>>,
+  exclude: Option<Vec<Box<Path>>>,
   #[arg(long)]
   all: bool,
   #[arg(long)]
@@ -39,7 +55,9 @@ pub struct Build {
   #[arg(long)]
   example: Option<Box<Path>>,
   #[arg(long)]
-  tests: Option<Box<str>>,
+  test: Option<Vec<Box<str>>>,
+  #[arg(long)]
+  tests: bool,
   #[arg(long)]
   benches: bool,
   #[arg(long)]
@@ -50,8 +68,8 @@ pub struct Build {
   release: bool,
   #[arg(long)]
   profile: Option<Box<str>>,
-  #[arg(long,short)]
-  jobs: Option<usize>,
+  #[arg(long,short,default_value="default")]
+  jobs: Box<str>,// this string is parsed into an int (isize).
   #[arg(long)]
   keep_going: bool,
   #[arg(long)]
@@ -83,6 +101,25 @@ pub struct Build {
 impl Build {
   // TODO(Nate)
   pub async fn build(self)-> anyhow::Result<()> {
+    match (self.cwd,&self.manifest_path) {
+      (Some(cwd),_)=> env::set_current_dir(cwd)?,
+      (_,Some(path))=> env::set_current_dir(path.parent().expect(msg::INVALID_MANIFEST_PATH))?,
+      _=> {}
+    }
+
+    let _config=match self.manifest_path {
+      None=> ShipConfig::fetch_config().await?,
+      Some(path)=> {
+        let buf=fs::read_to_string(path).await?;
+        toml::from_str(&buf)?
+      }
+    };
+
+    skip_handeling!(fs::create_dir_all(path::TARGET_DIR).await => ErrorKind::AlreadyExists => Ok(()))?;
+
+
+
+
     Ok(())
   }
 }
