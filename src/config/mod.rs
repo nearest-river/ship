@@ -1,10 +1,13 @@
 
 pub mod package;
 pub mod metadata;
+pub mod dependencies;
 
 
 use tokio::*;
 use package::*;
+use dependencies::*;
+
 
 use io::{
   Error,
@@ -31,6 +34,7 @@ use serde::{
 #[derive(Debug,Serialize,Deserialize)]
 pub struct ShipConfig {
   pub package: Package,
+  pub dependencies: Dependencies,
 }
 
 
@@ -59,7 +63,8 @@ impl ShipConfig {
 impl Default for ShipConfig {
   fn default()-> Self {
     ShipConfig {
-      package: Package::default()
+      package: Package::default(),
+      dependencies: Default::default()
     }
   }
 }
