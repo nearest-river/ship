@@ -1,15 +1,12 @@
 
 use semver::VersionReq;
+use std::collections::HashMap;
 
 use serde::{
   Serialize,
   Deserialize
 };
 
-use std::{
-  path::Path,
-  collections::HashMap
-};
 
 
 
@@ -28,9 +25,8 @@ pub enum DependencyInfo {
 #[serde(rename_all="kebab-case")]
 pub struct DependencyTable {
   version: Option<VersionReq>,
-  path: Option<Box<Path>>,
-  #[serde(rename="git",alias="hg",alias="pujul",alias="fossil")]
-  vcs_url: Option<Box<str>>,
+  #[serde(rename="git",alias="hg",alias="pijul",alias="fossil",alias="path")]
+  path: Option<Box<str>>,
   branch: Option<Box<str>>,
   #[serde(default="_false")]
   optional: bool,
