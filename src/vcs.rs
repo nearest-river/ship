@@ -25,11 +25,11 @@ macro_rules! spawn {
 
 #[derive(Debug,Clone)]
 pub enum VersionControl {
+  None,
   Git,
   Hg,
   Pijul,
-  Fossile,
-  None
+  Fossile
 }
 
 
@@ -37,7 +37,7 @@ impl VersionControl {
   pub async fn init(self)-> anyhow::Result<()> {
     match self {
       VersionControl::Git=> drop(
-        tokio::task::spawn_blocking(|| git2::Repository::init(",")).await??
+        tokio::task::spawn_blocking(|| git2::Repository::init(".")).await??
       ),
       VersionControl::Hg=> { spawn!("hg"); },
       VersionControl::Pijul=> { spawn!("pijul"); },

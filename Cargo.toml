@@ -80,5 +80,6 @@ anstyle = "1.0.7"
 anstream = "0.6.14"
 annotate-snippets = "0.11.2"
 inquire = { version = "0.7.5", features = ["chrono", "console", "editor", "tempfile", "termion"] }
+indicatif = { version = "0.17.8", features = ["futures", "tokio", "in_memory"] }
 
 
