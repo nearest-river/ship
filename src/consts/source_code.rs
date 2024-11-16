@@ -1,18 +1,17 @@
 
-pub const GITIGNORE: &str=r#"
-target/
+pub static VCS_IGNORE: &str=r#"target/
+*.lock
 "#;
 
-pub const MAIN: &str=r#"
-#include <stdio.h>
+pub static MAIN: &str=r#"#include <stdio.h>
 
 int main(int argc,const char** argv) {
-  printf("Hello, World!");
+  printf("Hello, World!\n");
   return 0;
 }
 "#;
 
-pub const LIB: &str=r#"
+pub static LIB: &str=r#"
 #ifdef _cplusplus
 extern "C" {
 #endif
