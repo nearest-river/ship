@@ -7,7 +7,7 @@ pub static GIT_REPO_DIR: &str=".git";
 pub static TARGET_DIR: &str="target";
 pub static DOC_DIR: &str="doc";
 
-pub static LIB: &str="src/lib.c";
+pub static LIB: &str="src/lib.h";
 pub static MAIN: &str="src/main.c";
 
 pub static GIT_IGNORE: &str=".gitignore";
