@@ -51,6 +51,7 @@ impl Init {
     }
 
     self.path=fs::canonicalize(self.path).await?.into_boxed_path();
+    // self.name will be empty only when path is "/"
     if self.name.is_empty() {
       self.name=self.path.file_name()
       .expect(msg::PROJECT_IN_ROOT_DIR)
@@ -59,7 +60,7 @@ impl Init {
     }
 
 
-    fs_api::ensure_fresh_dir(self.path,self.bin).await?;
+    fs_api::ensure_fresh_dir(self.path).await?;
 
     let (vcs_res,gitigore_res,src_dir_res)=tokio::join!{
       VersionControl::from_str(&self.vcs)?.init(),

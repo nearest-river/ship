@@ -1,11 +1,14 @@
-
-
 use std::str::FromStr;
-use tokio::process::Command;
+use crate::consts::source_code;
 
+use tokio::{
+  fs,
+  process::Command
+};
 
 use crate::consts::{
   msg,
+  path,
   event
 };
 
@@ -59,13 +62,29 @@ impl VersionControl {
       VersionControl::None=> (),
     };
 
+    if let Some(path)=self.ignore_file() {
+      fs::write(path,source_code::VCS_IGNORE).await?;
+    }
+
     Ok(())
+  }
+
+  #[inline(always)]
+  pub fn ignore_file(&self)-> Option<&'static str> {
+    match self {
+      Self::Hg=> Some(path::HG_IGNORE),
+      Self::Git=> Some(path::GIT_IGNORE),
+      Self::Pijul=> Some(path::PIJUL_IGNORE),
+      Self::Fossile=> Some(path::FOSSIL_IGNORE),
+      Self::None=> None
+    }
   }
 }
 
 impl FromStr for VersionControl {
   type Err=anyhow::Error;
 
+  #[inline(always)]
   fn from_str(vcs: &str)-> anyhow::Result<VersionControl> {
     match vcs {
       "git"=> Ok(Self::Git),

@@ -3,6 +3,7 @@ pub mod new;
 pub mod init;
 pub mod clean;
 pub mod build;
+pub mod dependency_installer;
 
 
 use new::*;
@@ -10,6 +11,7 @@ use init::*;
 use clean::*;
 use build::*;
 use clap::Parser;
+use dependency_installer::*;
 
 
 #[derive(Parser,Debug)]
@@ -22,14 +24,13 @@ pub enum App {
   Run,
   Test,
   Bench,
-  Add,
+  Add(DependencyInstaller),
   Remove,
   Install,
   Uninstall,
   Publish,
   Doc
 }
-
 
 impl App {
   pub async fn run(self)-> anyhow::Result<()> {
@@ -38,6 +39,7 @@ impl App {
       Self::New(this)=> this.run().await,
       Self::Clean(cleaner)=> cleaner.clean().await,
       Self::Build(builder)=> builder.build().await,
+      Self::Add(dependency_installer)=> dependency_installer.add_dependencies().await,
       _=> unimplemented!()
     }
   }
