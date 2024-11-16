@@ -16,7 +16,7 @@ use crate::{
 
 
 
-pub async fn ensure_fresh_dir<P: AsRef<Path>>(path: P,is_bin: bool)-> io::Result<()> {
+pub async fn ensure_fresh_dir<P: AsRef<Path>>(path: P)-> io::Result<()> {
   let path=path.as_ref();
 
   ensure_dir(&path).await?;
@@ -38,10 +38,8 @@ pub async fn ensure_fresh_dir<P: AsRef<Path>>(path: P,is_bin: bool)-> io::Result
       let _=(// Just ignoring the NotFound errors that may appear..
         fs::remove_file(path::CONFIG_FILE).await,
         fs::remove_file(path::LOCK_FILE).await,
-        match is_bin {
-          true=> fs::remove_file(path::MAIN).await,
-          _=> fs::remove_file(path::LIB).await
-        }
+        fs::remove_file(path::MAIN).await,
+        fs::remove_file(path::LIB).await
       );
 
       Ok(())
