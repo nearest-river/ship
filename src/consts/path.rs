@@ -12,7 +12,8 @@ pub static MAIN: &str="src/main.c";
 
 pub static GIT_IGNORE: &str=".gitignore";
 pub static HG_IGNORE: &str=".hgignore";
-pub static PIJUL_IGNORE: &str=".fossil-settings/ignore-glob";
+pub static PIJUL_IGNORE: &str=".ignore";
+pub static FOSSIL_IGNORE: &str=".fossil-settings/ignore-glob";
 
 
 
