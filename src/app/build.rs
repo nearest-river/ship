@@ -10,12 +10,10 @@ use tokio::{
 };
 
 use crate::{
+  INITIAL_WD,
+  consts::path,
   skip_handeling,
   config::ShipConfig,
-  consts::{
-    msg,
-    path
-  }
 };
 
 
@@ -101,16 +99,14 @@ pub struct Build {
 impl Build {
   // TODO(Nate)
   pub async fn build(self)-> anyhow::Result<()> {
-    match (self.cwd,&self.manifest_path) {
-      (Some(cwd),_)=> env::set_current_dir(cwd)?,
-      (_,Some(path))=> env::set_current_dir(path.parent().expect(msg::INVALID_MANIFEST_PATH))?,
-      _=> {}
+    if let Some(cwd)=self.cwd {
+      env::set_current_dir(cwd)?;
     }
 
     let _config=match self.manifest_path {
-      None=> ShipConfig::fetch_config().await?,
+      None=> ShipConfig::open(path::CONFIG_FILE).await?,
       Some(path)=> {
-        let buf=fs::read_to_string(path).await?;
+        let buf=fs::read_to_string(INITIAL_WD.join(path)).await?;
         toml::from_str(&buf)?
       }
     };

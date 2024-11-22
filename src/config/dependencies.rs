@@ -11,7 +11,7 @@ use serde::{
 
 
 #[derive(Debug,Serialize,Deserialize,Default)]
-pub struct Dependencies(HashMap<Box<str>,DependencyInfo>);
+pub struct Dependencies(pub HashMap<Box<str>,DependencyInfo>);
 
 
 #[derive(Debug,Serialize,Deserialize)]
@@ -24,14 +24,14 @@ pub enum DependencyInfo {
 #[derive(Debug,Serialize,Deserialize)]
 #[serde(rename_all="kebab-case")]
 pub struct DependencyTable {
-  version: Option<VersionReq>,
+  pub version: Option<VersionReq>,
   #[serde(rename="git",alias="hg",alias="pijul",alias="fossil",alias="path")]
-  path: Option<Box<str>>,
-  branch: Option<Box<str>>,
+  pub path: Option<Box<str>>,
+  pub branch: Option<Box<str>>,
   #[serde(default="_false")]
-  optional: bool,
-  registry: Option<Box<str>>,
-  package: Option<Box<str>>,
+  pub optional: bool,
+  pub registry: Option<Box<str>>,
+  pub package: Option<Box<str>>,
 }
 
 const fn _false()-> bool { false }

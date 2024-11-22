@@ -5,24 +5,9 @@ pub mod dependencies;
 
 
 use tokio::*;
-use package::*;
-use dependencies::*;
-
-
-use io::{
-  Error,
-  ErrorKind,
-};
-
-use std::{
-  env,
-  ffi::OsStr
-};
-
-use crate::{
-  consts::path,
-  skip_handeling
-};
+pub use package::*;
+use std::path::Path;
+pub use dependencies::*;
 
 use serde::{
   Deserialize,
@@ -39,24 +24,14 @@ pub struct ShipConfig {
 
 
 impl ShipConfig {
-  pub async fn save<P: AsRef<std::path::Path>>(&self,path: P)-> io::Result<()> {
+  pub async fn save<P: AsRef<Path>>(&self,path: P)-> io::Result<()> {
     fs::write(path,toml::to_string_pretty(&self).expect("couldn't parse the config file.")).await
   }
 
   #[must_use]
-  pub async fn fetch_config()-> anyhow::Result<ShipConfig> {
-    while !env::current_dir()?.eq(OsStr::new("/")) {
-      let buf=skip_handeling! {
-        fs::read_to_string(path::CONFIG_FILE).await => io::ErrorKind::NotFound => {
-          env::set_current_dir("..")?;
-          continue
-        }
-      }?;
-
-      return Ok(toml::from_str::<ShipConfig>(&buf)?);
-    }
-
-    Err(Error::new(ErrorKind::PermissionDenied,"cannot read project from root directory.").into())
+  pub async fn open<P: AsRef<Path>>(path: P)-> anyhow::Result<ShipConfig> {
+    let s=fs::read_to_string(path).await?;
+    Ok(toml::from_str::<Self>(&s)?)
   }
 }
 

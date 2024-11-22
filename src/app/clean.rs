@@ -10,7 +10,6 @@ use crate::{
   consts::event,
   consts::path,
   skip_handeling,
-  config::ShipConfig
 };
 
 use std::{
@@ -33,7 +32,6 @@ pub struct Clean {
 
 impl Clean {
   pub async fn clean(self)-> anyhow::Result<()> {
-    drop(ShipConfig::fetch_config().await?);// just to make sure that root of the project is the cwd.
     let mut count=0usize;
     let mut size=0u64;
     let mut queue=VecDeque::<Box<Path>>::new();
