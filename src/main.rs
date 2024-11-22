@@ -36,7 +36,7 @@ async fn main()-> anyhow::Result<()> {
 
   // cwd is gonna change to project root
   INITIAL_WD.get_or_init(|| async {
-    env::current_dir()?
+    env::current_dir()
     .expect("couldn't read cwd")
   }).await;
 
