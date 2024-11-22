@@ -38,6 +38,7 @@ async fn main()-> anyhow::Result<()> {
   INITIAL_WD.get_or_init(|| async {
     env::current_dir()
     .expect("couldn't read cwd")
+    .into_boxed_path()
   }).await;
 
   loop {
