@@ -13,19 +13,15 @@ pub mod compiler;
 use app::App;
 use clap::Parser;
 use crate::consts::path;
+use tokio::sync::OnceCell;
 use tracing_subscriber::FmtSubscriber;
 
 use std::{
   env,
   path::Path,
-  sync::LazyLock,
 };
 
-pub static INITIAL_WD: LazyLock<Box<Path>>=LazyLock::new(|| {
-  env::current_dir()
-  .expect("couldn't read cwd")
-  .into_boxed_path()
-});
+pub static INITIAL_WD: OnceCell<Box<Path>>=OnceCell::const_new();
 
 
 #[tokio::main]
@@ -39,7 +35,10 @@ async fn main()-> anyhow::Result<()> {
   .init();
 
   // cwd is gonna change to project root
-  LazyLock::force(&INITIAL_WD);
+  INITIAL_WD.get_or_init(|| async {
+    env::current_dir()?
+    .expect("couldn't read cwd")
+  }).await;
 
   loop {
     match Path::new(path::CONFIG_FILE).try_exists() {
