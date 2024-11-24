@@ -10,6 +10,8 @@ opt-level = "s"
 lto = true
 codegen-units = 1
 
+[profile.dev]
+debug = true
 
 [dependencies]
 clap = "4.4.10"
@@ -82,5 +84,7 @@ annotate-snippets = "0.11.2"
 inquire = { version = "0.7.5", features = ["chrono", "console", "editor", "tempfile", "termion"] }
 indicatif = { version = "0.17.8", features = ["futures", "tokio", "in_memory"] }
 futures = { version = "0.3.31", features = ["io-compat"] }
+console = "0.15.8"
+tokio-stream = { version = "0.1.16", features = ["full"] }
 
 

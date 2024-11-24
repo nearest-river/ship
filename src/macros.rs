@@ -38,3 +38,19 @@ macro_rules! panik {
   }};
 }
 
+#[macro_export]
+macro_rules! progress_style {
+  ()=> {
+    indicatif::ProgressStyle::with_template(
+      if console::Term::stdout().size().1 > 80 {
+        "{prefix:>12.cyan.bold} [{bar:57}] {pos}/{len} {wide_msg}"
+      } else {
+        "{prefix:>12.cyan.bold} [{bar:57}] {pos}/{len}"
+      },
+    )
+    .unwrap()
+    .progress_chars("=> ")
+  };
+}
+
+

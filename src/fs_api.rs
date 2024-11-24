@@ -1,9 +1,9 @@
 
 mod cwd_mgr;
 use tokio::*;
-pub use cwd_mgr::*;
+use futures::io;
 use std::path::Path;
-use color_print::cformat;
+pub use cwd_mgr::*;
 
 use crate::{
   confirm,
@@ -27,7 +27,7 @@ pub async fn ensure_fresh_dir<P: AsRef<Path>>(path: P)-> io::Result<()> {
     return Ok(());
   }
 
-  let prompt=confirm!(&cformat!("{}: `{}` already consists a ship project. Do you want to continue?",event::WARNING,path.display()),false);
+  let prompt=confirm!(&format!("{}: `{}` already consists a ship project. Do you want to continue?",event::WARNING,path.display()),false);
 
   match prompt {
     false=> Err(io::Error::new(
@@ -39,7 +39,8 @@ pub async fn ensure_fresh_dir<P: AsRef<Path>>(path: P)-> io::Result<()> {
         fs::remove_file(path::CONFIG_FILE).await,
         fs::remove_file(path::LOCK_FILE).await,
         fs::remove_file(path::MAIN).await,
-        fs::remove_file(path::LIB).await
+        fs::remove_file(path::LIB_C).await,
+        fs::remove_file(path::LIB_H).await
       );
 
       Ok(())
@@ -56,4 +57,11 @@ pub async fn ensure_dir<P: AsRef<Path>>(path: P)-> io::Result<()> {
   Ok(())
 }
 
-
+#[inline(always)]
+pub fn ignore_notfound<T>(result: io::Result<T>)-> io::Result<()> {
+  match result {
+    Err(err) if err.kind()==io::ErrorKind::NotFound=> Ok(()),
+    Ok(_)=> Ok(()),
+    Err(err)=> Err(err),
+  }
+}

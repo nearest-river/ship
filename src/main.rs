@@ -30,6 +30,7 @@ pub static INITIAL_WD: LazyLock<Box<Path>>=LazyLock::new(|| {
 
 #[tokio::main]
 async fn main()-> anyhow::Result<()> {
+  tracing::info!("main");
   FmtSubscriber::builder()
   .compact()
   .with_line_number(false)
@@ -38,10 +39,12 @@ async fn main()-> anyhow::Result<()> {
   .with_target(false)
   .init();
 
+  tracing::info!("xd");
   // cwd is gonna change to project root
   LazyLock::force(&INITIAL_WD);
 
   loop {
+    break;
     match Path::new(path::CONFIG_FILE).try_exists() {
       Ok(true)=> break,
       Ok(false)=> env::set_current_dir("..")?,
