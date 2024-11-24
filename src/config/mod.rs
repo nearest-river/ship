@@ -1,10 +1,11 @@
-
+pub mod lock;
 pub mod package;
 pub mod metadata;
 pub mod dependencies;
 
 
 use tokio::*;
+pub use lock::*;
 pub use package::*;
 use std::path::Path;
 pub use dependencies::*;
