@@ -72,7 +72,13 @@ impl Init {
       fs::write(path::MAIN,source_code::MAIN).await?;
     } else {
       let name=self.name.to_uppercase();
-      fs::write(path::LIB,format!("#ifndef {name}_H\n#define {name}_H\n{}\n#endif\n",source_code::LIB)).await?;
+
+      let (res_c,res_h)=tokio::join! {
+        fs::write(path::LIB_C,source_code::LIB_C),
+        fs::write(path::LIB_H,format!("#ifndef {name}_H\n#define {name}_H\n{}\n#endif\n",source_code::LIB_H))
+      };
+
+      res_c.and(res_h)?;
     }
 
     let mut config=ShipConfig::default();

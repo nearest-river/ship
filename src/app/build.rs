@@ -1,5 +1,3 @@
-
-
 use std::env;
 use clap::Parser;
 use std::path::Path;
@@ -10,7 +8,6 @@ use tokio::{
 };
 
 use crate::{
-  INITIAL_WD,
   consts::path,
   skip_handeling,
   config::ShipConfig,
@@ -106,12 +103,15 @@ impl Build {
     let _config=match self.manifest_path {
       None=> ShipConfig::open(path::CONFIG_FILE).await?,
       Some(path)=> {
-        let buf=fs::read_to_string(INITIAL_WD.join(path)).await?;
+        let buf=fs::read_to_string(path::INITIAL_WD.join(path)).await?;
         toml::from_str(&buf)?
       }
     };
 
-    skip_handeling!(fs::create_dir_all(path::TARGET_DIR).await => ErrorKind::AlreadyExists => Ok(()))?;
+    let target_dir=self.target_dir
+    .as_deref()
+    .unwrap_or(&path::TARGET_DIR);
+    skip_handeling!(fs::create_dir_all(target_dir).await => ErrorKind::AlreadyExists => Ok(()))?;
 
 
 

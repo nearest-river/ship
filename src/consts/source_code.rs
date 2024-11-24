@@ -11,17 +11,21 @@ int main(int argc,const char** argv) {
 }
 "#;
 
-pub static LIB: &str=r#"
+pub static LIB_H: &str=r#"
 #ifdef _cplusplus
 extern "C" {
 #endif
 
-int add(int x,int y) {
-  return x + y;
-}
+int add(int x,int y);
 
 #ifdef _cplusplus
 }
 #endif
+"#;
+
+pub static LIB_C: &str=r#"
+int add(int x,int y) {
+  return x+y;
+}
 "#;
 

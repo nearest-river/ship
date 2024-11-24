@@ -18,19 +18,12 @@ use tracing_subscriber::FmtSubscriber;
 use std::{
   env,
   path::Path,
-  sync::LazyLock
 };
-
-pub static INITIAL_WD: LazyLock<Box<Path>>=LazyLock::new(|| {
-  env::current_dir()
-  .expect("couldn't read cwd")
-  .into_boxed_path()
-});
 
 
 #[tokio::main]
 async fn main()-> anyhow::Result<()> {
-  tracing::info!("main");
+  consts::init();
   FmtSubscriber::builder()
   .compact()
   .with_line_number(false)
@@ -39,12 +32,13 @@ async fn main()-> anyhow::Result<()> {
   .with_target(false)
   .init();
 
-  tracing::info!("xd");
   // cwd is gonna change to project root
-  LazyLock::force(&INITIAL_WD);
-
+  
   loop {
-    break;
+    if cfg!(debug_assertions) {
+      break;
+    }
+
     match Path::new(path::CONFIG_FILE).try_exists() {
       Ok(true)=> break,
       Ok(false)=> env::set_current_dir("..")?,

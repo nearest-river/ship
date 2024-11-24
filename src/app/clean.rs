@@ -35,7 +35,7 @@ impl Clean {
   pub async fn clean(mut self)-> anyhow::Result<()> {
     let mut count=0usize;
     let mut size=0u64;
-    let mut queue=vec![Box::from(Path::new(path::TARGET_DIR))];
+    let mut queue=vec![Box::from(path::TARGET_DIR.clone())];
 
     let pb=ProgressBar::new(32)
     .with_style(progress_style!());
