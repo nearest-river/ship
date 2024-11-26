@@ -68,4 +68,30 @@ pub fn ignore_notfound<T>(result: io::Result<T>)-> io::Result<()> {
   }
 }
 
+pub async fn copy_dir_all(from: impl AsRef<Path>,to: impl AsRef<Path>)-> io::Result<()> {
+  let to=to.as_ref();
+  let mut stream=fs::read_dir(from).await?;
+
+  while let Some(entry)=stream.next_entry().await? {
+    let metadata=entry.metadata().await?;
+    let mut src=entry.path();
+    let dest=to.join(entry.file_name());
+
+    if metadata.is_symlink() {
+      src=fs::read_link(src).await?;
+    }
+
+    if metadata.is_dir() {
+      copy_dir_all(src,dest).await?;
+      continue;
+    }
+
+    fs::copy(src,dest).await?;
+  }
+
+  Ok(())
+}
+
+
+
 
