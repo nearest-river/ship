@@ -17,7 +17,7 @@ use crate::consts::{
   event
 };
 
-macro_rules! spawn {
+macro_rules! init {
   ($command:literal $(,$arg:expr)*)=> {
     Command::new($command)
     .args(["init","--","."])
@@ -31,7 +31,7 @@ macro_rules! spawn {
 
 
 
-#[derive(Debug,Clone,Copy,Eq)]
+#[derive(Debug,Clone,Copy,Eq,PartialEq)]
 pub enum VersionControl {
   None,
   Git,
@@ -47,11 +47,11 @@ impl VersionControl {
       VersionControl::Git=> drop(
         task::spawn_blocking(|| Repository::init(".")).await??
       ),
-      VersionControl::Hg=> { spawn!("hg"); },
-      VersionControl::Pijul=> { spawn!("pijul"); },
+      VersionControl::Hg=> { init!("hg"); },
+      VersionControl::Pijul=> { init!("pijul"); },
       VersionControl::Fossile=> {
         let db_path = ".fossil";
-        let init_code=spawn!("fossil",&db_path);
+        let init_code=init!("fossil",&db_path);
 
         // open it in that new directory
         let open_code=Command::new("fossil")
