@@ -1,20 +1,10 @@
 mod cwd_mgr;
+use std::path::Path;
 pub use cwd_mgr::*;
-use tokio_stream::wrappers::ReadDirStream;
-use futures::{
-  future,
-  StreamExt
-};
 
 use tokio::{
   fs,
   io,
-  sync::RwLock
-};
-
-use std::{
-  sync::Arc,
-  path::Path,
 };
 
 use crate::{
@@ -77,64 +67,5 @@ pub fn ignore_notfound<T>(result: io::Result<T>)-> io::Result<()> {
     Err(err)=> Err(err),
   }
 }
-
-pub async fn copy_dir_all(src: impl AsRef<Path>,dest: impl AsRef<Path>)-> io::Result<()> {
-  let src=fs::canonicalize(src).await?;
-  fs::create_dir_all(&dest).await?;
-  let dest=fs::canonicalize(dest.as_ref()).await?;
-
-  type Stack=Vec<(Box<Path>,Box<Path>)>;
-  let stack: Arc<RwLock<Stack>>=Arc::new(RwLock::new(vec![
-    (src.into_boxed_path(),dest.into_boxed_path())
-  ]));
-
-  let mut stack_bind=stack.write().await;
-  while let Some((src,dest))=stack_bind.pop() {
-    let stream=ReadDirStream::new(fs::read_dir(src).await?)
-    .map(|entry| async {
-      let entry=entry?;
-      let mut src_path=entry.path();
-      let dest_path=dest.join(src_path.file_name().unwrap());
-      let metadata=fs::metadata(&src_path).await?;
-
-      if metadata.is_symlink() {
-        src_path=fs::read_link(src_path).await?;
-      }
-
-      if metadata.is_dir() {
-        fs::create_dir_all(&dest_path).await?;
-        let stack_binding=Arc::clone(&stack);
-        let mut stack=stack_binding.write().await;
-        stack.push((src_path.into_boxed_path(),dest_path.into_boxed_path()));
-        return Ok(());
-      }
-
-      fs::copy(&src_path,&dest_path).await?;
-      io::Result::Ok(())
-    }).collect::<Vec<_>>().await;
-
-    for res in future::join_all(stream).await {
-      res?;
-    }
-
-    stack_bind=stack.write().await;
-  }
-
-  Ok(())
-}
-
-
-#[cfg(test)]
-mod tests {
-  use std::io;
-
-  #[tokio::test]
-  async fn copy_dir_all()-> io::Result<()> {
-    super::copy_dir_all("/home/nate/Games/","/home/nate/temp_games").await
-  }
-}
-
-
-
 
 
