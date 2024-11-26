@@ -1,6 +1,10 @@
 mod cwd_mgr;
-use std::path::Path;
 pub use cwd_mgr::*;
+
+use std::{
+  path::Path,
+  future::Future
+};
 
 use tokio::{
   fs,
@@ -68,7 +72,7 @@ pub fn ignore_notfound<T>(result: io::Result<T>)-> io::Result<()> {
   }
 }
 
-pub async fn copy_dir_all<F: Fn(&Path)>(from: impl AsRef<Path>,to: impl AsRef<Path>,f: F)-> io::Result<()> {
+pub async fn copy_dir_all(from: impl AsRef<Path>,to: impl AsRef<Path>)-> io::Result<()> {
   let from=Box::<Path>::from(from.as_ref());
   let to=Box::<Path>::from(to.as_ref());
   let mut stack=vec![(from,to)];
@@ -90,30 +94,9 @@ pub async fn copy_dir_all<F: Fn(&Path)>(from: impl AsRef<Path>,to: impl AsRef<Pa
         continue;
       }
 
-      f(&src);
       fs::copy(src,dest).await?;
     }
   }
-
-/*
-
-  while let Some(entry)=stream.next_entry().await? {
-    let file_type=entry.file_type().await?;
-    let mut src=entry.path();
-    let dest=to.join(entry.file_name());
-
-    if file_type.is_symlink() {
-      src=fs::read_link(src).await?;
-    }
-
-    if file_type.is_dir() {
-      copy_dir_all(src,dest,&f).await?;
-    } else {
-      f(&src);
-      fs::copy(src,dest).await?;
-    }
-  }
-*/
 
   Ok(())
 }
