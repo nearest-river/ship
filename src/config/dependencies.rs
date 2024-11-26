@@ -1,5 +1,5 @@
-
 use semver::VersionReq;
+use super::PackageLock;
 use std::collections::HashMap;
 
 use serde::{
@@ -37,15 +37,11 @@ pub struct DependencyTable {
 const fn _false()-> bool { false }
 
 impl Dependencies {
-  pub async fn fetch(&self)-> anyhow::Result<()> {
+  pub async fn fetch(&self)-> anyhow::Result<PackageLock> {
     unimplemented!()
   }
 
   pub async fn download(&self)-> anyhow::Result<()> {
-    unimplemented!()
-  }
-
-  pub async fn build()-> anyhow::Result<()> {
     unimplemented!()
   }
 }

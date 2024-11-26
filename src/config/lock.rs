@@ -1,5 +1,5 @@
 use tokio::fs;
-use semver::VersionReq;
+use semver::Version;
 use serde::{
   Serialize,
   Deserialize
@@ -16,12 +16,13 @@ pub struct PackageLock {
   pub packages: HashSet<PackageEntry>
 }
 
-#[derive(Serialize,Deserialize,Hash,PartialEq,Eq,Default,Debug)]
+#[derive(Serialize,Deserialize,Hash,PartialEq,Eq,Debug)]
 pub struct PackageEntry {
   pub name: Box<str>,
-  pub version: VersionReq,
+  pub version: Version,
   pub source: Box<str>,
-  pub checksum: Box<str>
+  pub checksum: Box<str>,
+  pub dependencies: Vec<Box<str>>
 }
 
 
