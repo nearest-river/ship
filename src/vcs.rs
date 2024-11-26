@@ -1,8 +1,13 @@
-use std::str::FromStr;
+use git2::Repository;
 use crate::consts::source_code;
+use std::{
+  path::Path,
+  str::FromStr
+};
 
 use tokio::{
   fs,
+  task,
   process::Command
 };
 
@@ -26,7 +31,7 @@ macro_rules! spawn {
 
 
 
-#[derive(Debug,Clone)]
+#[derive(Debug,Clone,Copy,Eq)]
 pub enum VersionControl {
   None,
   Git,
@@ -40,7 +45,7 @@ impl VersionControl {
   pub async fn init(self)-> anyhow::Result<()> {
     match self {
       VersionControl::Git=> drop(
-        tokio::task::spawn_blocking(|| git2::Repository::init(".")).await??
+        task::spawn_blocking(|| Repository::init(".")).await??
       ),
       VersionControl::Hg=> { spawn!("hg"); },
       VersionControl::Pijul=> { spawn!("pijul"); },
@@ -57,7 +62,7 @@ impl VersionControl {
         match (init_code.success() && open_code.success(),init_code.code(),open_code.code()) {
           (false,Some(init_code),Some(open_code))=> panik!(code: init_code|open_code,"{}: Failed to initialize fossile repository",event::ERROR),
           _=> {}
-        }
+      }
       },
       VersionControl::None=> (),
     };
@@ -70,7 +75,7 @@ impl VersionControl {
   }
 
   #[inline(always)]
-  pub fn ignore_file(&self)-> Option<&'static str> {
+  pub fn ignore_file(self)-> Option<&'static str> {
     match self {
       Self::Hg=> Some(path::HG_IGNORE),
       Self::Git=> Some(path::GIT_IGNORE),
@@ -78,6 +83,54 @@ impl VersionControl {
       Self::Fossile=> Some(path::FOSSIL_IGNORE),
       Self::None=> None
     }
+  }
+
+  pub fn metadata_dir(self)-> Option<Box<Path>> {
+    let dir_name=match self {
+      Self::Git=> path::GIT_METADATA_DIR,
+      Self::Hg=> path::HG_METADATA_DIR,
+      Self::Pijul=> path::PIJUL_PIJUL_DIR,
+      Self::Fossile=> path::FOSSIL_FOSSIL_DIR,
+      Self::None=> None?
+    };
+
+    path::PROJECT_ROOT.join(dir_name)
+    .into_boxed_path()
+    .into()
+  }
+
+  pub async fn clone(self,url: impl AsRef<Path>,into: impl AsRef<Path>)-> anyhow::Result<()> {
+    let program=match self {
+      Self::None=> return Ok(()),
+      Self::Fossile=> "fossil",
+      Self::Pijul=> "pijul",
+      Self::Hg=> "hg",
+      Self::Git=> return Self::git_clone(url,into).await
+    };
+
+    Command::new(program)
+    .arg(url.as_ref().as_os_str())
+    .arg(into.as_ref().as_os_str())
+    .arg("--recursive")
+    .status().await?;
+
+    if self==Self::Hg {
+      Command::new("hg")
+      .arg("update")
+      .status().await?;
+    }
+
+    Ok(())
+  }
+
+  async fn git_clone(url: impl AsRef<Path>,into: impl AsRef<Path>)-> anyhow::Result<()> {
+    let url=url.as_ref().to_owned();
+    let into=into.as_ref().to_owned();
+    let _xd=task::spawn(async move {
+      Repository::clone_recurse(url.to_str().expect("coudln't be parsed"),into)
+    }).await?;
+
+    Ok(())
   }
 }
 
