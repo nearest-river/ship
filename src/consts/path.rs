@@ -32,13 +32,27 @@ pub static INITIAL_WD: LazyLock<Box<Path>>=LazyLock::new(|| {
 });
 
 
-
 pub static CONFIG_FILE: &str="Ship.toml";
 pub static LOCK_FILE: &str="Ship.lock";
+pub static PROJECT_ROOT: LazyLock<Box<Path>>=LazyLock::new(|| {
+  // cwd is gonna change to project root
+  loop {
+    match Path::new(CONFIG_FILE).try_exists() {
+      Ok(true)=> break,
+      Ok(false)=> env::set_current_dir("..").expect("couldn't access the filesystem"),
+      Err(err)=> panic!("no ship project found, reached {err:#?}")
+    }
+  }
+
+  std::fs::canonicalize(".")
+  .expect("couldn't access the filesystem")
+  .into_boxed_path()
+});
+
 
 pub static SOURCE_DIR: &str="src";
-pub static GIT_REPO_DIR: &str=".git";
 pub static TARGET_DIR: LazyLock<Box<Path>>=env_var!("SHIP_TARGET_DIR"??Path::new("target").into());
+pub static DEPS: LazyLock<Box<Path>>=LazyLock::new(|| TARGET_DIR.join("deps").into_boxed_path());
 
 
 pub static LIB_H: &str="src/lib.h";
@@ -49,6 +63,11 @@ pub static GIT_IGNORE: &str=".gitignore";
 pub static HG_IGNORE: &str=".hgignore";
 pub static PIJUL_IGNORE: &str=".ignore";
 pub static FOSSIL_IGNORE: &str=".fossil-settings/ignore-glob";
+
+pub static GIT_METADATA_DIR: &str=".git";
+pub static HG_METADATA_DIR: &str=".hg";
+pub static PIJUL_PIJUL_DIR: &str=".pijul";
+pub static FOSSIL_FOSSIL_DIR: &str=".fossil";
 
 
 

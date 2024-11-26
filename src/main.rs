@@ -32,20 +32,6 @@ async fn main()-> anyhow::Result<()> {
   .with_target(false)
   .init();
 
-  // cwd is gonna change to project root
-  
-  loop {
-    if cfg!(debug_assertions) {
-      break;
-    }
-
-    match Path::new(path::CONFIG_FILE).try_exists() {
-      Ok(true)=> break,
-      Ok(false)=> env::set_current_dir("..")?,
-      Err(err)=> panic!("no ship project found, reached {err:#?}")
-    }
-  }
-
   App::parse().run().await
 }
 

@@ -14,6 +14,7 @@ pub fn init() {
   LazyLock::force(&path::SHIP_LIB);
   LazyLock::force(&path::SHIP_BIN);
   LazyLock::force(&path::TARGET_DIR);
+  LazyLock::force(&path::PROJECT_ROOT);
   LazyLock::force(&path::INITIAL_WD);
 }
 
