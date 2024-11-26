@@ -24,11 +24,14 @@ macro_rules! env_var {
 pub static HOME: LazyLock<Box<Path>>=env_var!("HOME");
 pub static SHIP_INSTALL: LazyLock<Box<Path>>=env_var!("SHIP_INSTALL"??HOME.join(".ship").into_boxed_path());
 pub static SHIP_BIN: LazyLock<Box<Path>>=env_var!("SHIP_BIN"??SHIP_INSTALL.join("bin").into_boxed_path());
+pub static SHIP_LIB: LazyLock<Box<Path>>=LazyLock::new(|| SHIP_INSTALL.join("lib").into_boxed_path());
 pub static INITIAL_WD: LazyLock<Box<Path>>=LazyLock::new(|| {
   env::current_dir()
   .expect("couldn't read cwd")
   .into_boxed_path()
 });
+
+
 
 pub static CONFIG_FILE: &str="Ship.toml";
 pub static LOCK_FILE: &str="Ship.lock";

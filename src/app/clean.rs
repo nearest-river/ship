@@ -77,7 +77,7 @@ impl Clean {
     let msg=match self.dry_run {
       true=> event::SUMMARY,
       _=> {
-        ignore_notfound(fs::remove_dir_all(path::TARGET_DIR).await)?;
+        ignore_notfound(fs::remove_dir_all(path::TARGET_DIR.as_ref()).await)?;
         event::REMOVED
       }
     };
