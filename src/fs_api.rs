@@ -68,26 +68,52 @@ pub fn ignore_notfound<T>(result: io::Result<T>)-> io::Result<()> {
   }
 }
 
-pub async fn copy_dir_all(from: impl AsRef<Path>,to: impl AsRef<Path>)-> io::Result<()> {
-  let to=to.as_ref();
-  let mut stream=fs::read_dir(from).await?;
+pub async fn copy_dir_all<F: Fn(&Path)>(from: impl AsRef<Path>,to: impl AsRef<Path>,f: F)-> io::Result<()> {
+  let from=Box::<Path>::from(from.as_ref());
+  let to=Box::<Path>::from(to.as_ref());
+  let mut stack=vec![(from,to)];
+
+  while let Some((from,to))=stack.pop() {
+    let mut stream=fs::read_dir(from).await?;
+
+    while let Some(entry)=stream.next_entry().await? {
+      let file_type=entry.file_type().await?;
+      let mut src=entry.path();
+      let dest=to.join(entry.file_name());
+
+      if file_type.is_symlink() {
+        src=fs::read_link(src).await?;
+      }
+
+      if file_type.is_dir() {
+        stack.push((src.into_boxed_path(),dest.into_boxed_path()));
+        continue;
+      }
+
+      f(&src);
+      fs::copy(src,dest).await?;
+    }
+  }
+
+/*
 
   while let Some(entry)=stream.next_entry().await? {
-    let metadata=entry.metadata().await?;
+    let file_type=entry.file_type().await?;
     let mut src=entry.path();
     let dest=to.join(entry.file_name());
 
-    if metadata.is_symlink() {
+    if file_type.is_symlink() {
       src=fs::read_link(src).await?;
     }
 
-    if metadata.is_dir() {
-      copy_dir_all(src,dest).await?;
-      continue;
+    if file_type.is_dir() {
+      copy_dir_all(src,dest,&f).await?;
+    } else {
+      f(&src);
+      fs::copy(src,dest).await?;
     }
-
-    fs::copy(src,dest).await?;
   }
+*/
 
   Ok(())
 }
