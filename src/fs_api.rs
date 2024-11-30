@@ -1,10 +1,6 @@
 mod cwd_mgr;
 pub use cwd_mgr::*;
-
-use std::{
-  path::Path,
-  future::Future
-};
+use std::path::Path;
 
 use tokio::{
   fs,

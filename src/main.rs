@@ -1,4 +1,3 @@
-
 mod app;
 mod consts;
 
@@ -12,13 +11,7 @@ pub mod compiler;
 
 use app::App;
 use clap::Parser;
-use crate::consts::path;
 use tracing_subscriber::FmtSubscriber;
-
-use std::{
-  env,
-  path::Path,
-};
 
 
 #[tokio::main]
