@@ -52,7 +52,7 @@ pub static PROJECT_ROOT: LazyLock<Box<Path>>=LazyLock::new(|| {
 
 pub static SOURCE_DIR: &str="src";
 pub static TARGET_DIR: LazyLock<Box<Path>>=env_var!("SHIP_TARGET_DIR"??Path::new("target").into());
-pub static DEPS: LazyLock<Box<Path>>=LazyLock::new(|| TARGET_DIR.join("deps").into_boxed_path());
+
 
 
 pub static LIB_H: &str="src/lib.h";

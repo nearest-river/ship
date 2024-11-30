@@ -1,14 +1,17 @@
 
+pub mod env;
 pub mod url;
 pub mod msg;
 pub mod path;
 pub mod event;
+pub mod pattern;
 pub mod source_code;
 
 
 pub fn init() {
   use std::sync::LazyLock;
 
+  LazyLock::force(&env::CC);
   LazyLock::force(&path::HOME);
   LazyLock::force(&path::SHIP_INSTALL);
   LazyLock::force(&path::SHIP_LIB);
