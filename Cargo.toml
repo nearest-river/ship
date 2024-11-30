@@ -18,12 +18,12 @@ clap = "4.4.10"
 git2 = "0.18.1"
 regex = "1.10.2"
 serde_json = "1.0.108"
-clap-verbosity-flag = "2.1.0"
+clap-verbosity-flag = "^2.1"
 tokio = { version = "1.35.0", features = [ "full" ] } # ["fs", "rt", "process", "macros", "rt-multi-thread"] }
 serde = { version = "1.0.193", features = ["derive"] }
 libc = { version = "0.2.155", features = ["const-extern-fn", "extra_traits"] }
 gccjit = { version = "2.0.0", features = ["master"] }
-toml = "0.8.13"
+toml = { version = "0.8.13", features = ["preserve_order"] }
 tar = "0.4.40"
 toml_edit = { version = "0.22.13", features = ["serde"] }
 tempfile = "3.10.1"
