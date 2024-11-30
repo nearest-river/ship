@@ -1,6 +1,7 @@
 pub mod lock;
 pub mod package;
 pub mod metadata;
+pub mod fingerprint;
 pub mod dependencies;
 
 

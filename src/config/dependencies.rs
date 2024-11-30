@@ -1,6 +1,10 @@
 use semver::VersionReq;
 use super::PackageLock;
-use std::collections::HashMap;
+
+use std::{
+  path::Path,
+  collections::HashMap
+};
 
 use serde::{
   Serialize,
@@ -42,6 +46,10 @@ impl Dependencies {
   }
 
   pub async fn download(&self)-> anyhow::Result<()> {
+    unimplemented!()
+  }
+
+  pub async fn sync<P: AsRef<Path>>(&self,path: P)-> anyhow::Result<PackageLock> {
     unimplemented!()
   }
 }
