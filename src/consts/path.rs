@@ -70,4 +70,18 @@ pub static PIJUL_PIJUL_DIR: &str=".pijul";
 pub static FOSSIL_FOSSIL_DIR: &str=".fossil";
 
 
+#[cfg(not(target_os="windows"))]
+pub static STATIC_LIBRARY_EXTENTION: &str="a";
+#[cfg(target_os="windows")]
+pub static STATIC_LIBRARY_EXTENTION: &str="lib";
+
+#[cfg(not(all(target_os="windows",target_os="macos",target_os="ios")))]
+pub static SHARED_LIBRARY_EXTENTION: &str="so";
+#[cfg(target_os="windows")]
+pub static SHARED_LIBRARY_EXTENTION: &str="dll";
+#[cfg(any(target_os="macos",target_os="ios"))]
+pub static SHARED_LIBRARY_EXTENTION: &str="dll";
+
+
+
 
