@@ -6,7 +6,6 @@ pub mod macros;
 pub mod vcs;
 pub mod fs_api;
 pub mod config;
-pub mod compiler;
 
 
 use app::App;

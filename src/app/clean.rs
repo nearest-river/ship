@@ -1,14 +1,10 @@
 use clap::Parser;
+use std::fs::Metadata;
 use indicatif::ProgressBar;
 
 use tokio::{
   fs,
   io::ErrorKind
-};
-
-use std::{
-  path::Path,
-  fs::Metadata,
 };
 
 use crate::{

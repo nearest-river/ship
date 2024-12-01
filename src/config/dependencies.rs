@@ -49,7 +49,7 @@ impl Dependencies {
     unimplemented!()
   }
 
-  pub async fn sync<P: AsRef<Path>>(&self,path: P)-> anyhow::Result<PackageLock> {
+  pub async fn sync<P: AsRef<Path>>(&self,_path: P)-> anyhow::Result<PackageLock> {
     unimplemented!()
   }
 }
